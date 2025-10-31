@@ -8,7 +8,7 @@ setup(
     author_email="i@maxim-sadovskiy.ru",
     packages=find_packages(),
     install_requires=[
-        "MyID @ git+https://github.com/Sam-Strand/my_id.git",
+        "my_id @ git+https://github.com/Sam-Strand/my_id.git",
     ],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
