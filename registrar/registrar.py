@@ -1,11 +1,15 @@
 from typing import Dict, Callable, TypeVar, Any, List
-from my_id import MyID
-
+try:
+    from my_id import MyID as get_uid
+except ImportError:
+    import uuid
+    get_uid = uuid.uuid4
+    
 T = TypeVar('T')
 
 class Registrar:
     '''
-    Универсальный регистратор функций. Все функции регистрируются с автоматическим uid.
+    Универсальный регистратор функций. Без указания имени функции регистрируются с автоматическим uid.
     '''
     
     _global_pools: Dict[str, 'Registrar'] = {}
@@ -32,7 +36,7 @@ class Registrar:
             uid: Опциональный идентификатор. Если None - генерируется uid.
         '''
         def decorator(func: T) -> T:
-            actual_uid = uid or MyID()
+            actual_uid = uid or get_uid()
             if actual_uid in self._function_pool:
                 raise KeyError(f"Функция '{actual_uid}' уже была добавлена '{self.name}'")
             self._function_pool[actual_uid] = func
