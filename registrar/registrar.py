@@ -1,4 +1,4 @@
-from typing import Dict, Callable, TypeVar, Any, List
+from typing import Dict, Callable, TypeVar, Any, List, Optional, Union
 try:
     from my_id import MyID as get_uid
 except ImportError:
@@ -28,17 +28,23 @@ class Registrar:
             self.name = name
             self._function_pool: Dict[str, Callable[..., Any]] = {}
     
-    def register(self, uid: str = None) -> Callable[[T], T]:
+    def register(self, uid: Optional[str] = None) -> Union[Callable[[T], T], T]:
         '''
         Декоратор для регистрации функции.
         
         Args:
             uid: Опциональный идентификатор. Если None - генерируется uid.
         '''
+        # Если вызвано без скобок: @register
+        if callable(uid):
+            func = uid
+            actual_uid = get_uid()
+            self._function_pool[actual_uid] = func
+            return func
+        
+        # Если вызвано со скобками: @register() или @register("my_uid")
         def decorator(func: T) -> T:
             actual_uid = uid or get_uid()
-            if actual_uid in self._function_pool:
-                raise KeyError(f"Функция '{actual_uid}' уже была добавлена '{self.name}'")
             self._function_pool[actual_uid] = func
             return func
         return decorator
@@ -91,7 +97,7 @@ if __name__ == '__main__':
     math = Registrar('math')
     
     # 1. Регистрация функций
-    @startup.register()
+    @startup.register
     def db_init():
         print("   🗄️ База данных готова")
         return "db_ok"
