@@ -78,6 +78,19 @@ class Registrar:
             return pool.register(uid)(func)
         return decorator
     
+    def get(self, uid: str, default: Any = None) -> Optional[Callable[..., Any]]:
+        '''
+        Получить функцию по uid. Аналогично dict.get().
+        
+        Args:
+            uid: Идентификатор функции
+            default: Значение по умолчанию, если функция не найдена
+            
+        Returns:
+            Функция или default, если не найдено
+        '''
+        return self._function_pool.get(uid, default)
+
     def keys(self):
         return self._function_pool.keys()
     
@@ -117,7 +130,7 @@ if __name__ == '__main__':
     
     # 3. Использование функций
     print("\nИспользование:")
-    print(f"   math['sum'](2, 3) = {math['sum'](2, 3)}")
+    print(f"   math.get('sum')(2, 3) = {math.get('sum')(2, 3)}")
     print(f"   math['multiply'](4, 5) = {math['multiply'](4, 5)}")
     
     # 4. Прямое присваивание
